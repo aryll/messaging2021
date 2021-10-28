@@ -1,0 +1,23 @@
+Użytkownik robi dużo szalonych rzeczy 
+    -> nieregularne obciążenia systemu.
+        W takim przypadku warto mieć system kolejkowy/mieć skalowalne WebApi do szybkiego przejęcia dużej liczby requestów.
+
+Nie chcemy zgubić jakiegoś zamówienia, ale też nie chcemy wysłać komuś coś dwa razy
+    -> ponownie w tym scenariuszu pasuje zastosowanie kolejek. Nawet jeśli pojawi się jakiś problem "gdzieś po drodze", to mechanizm kolejkowy pomoże nam to okiełznać
+
+Zamówienie można anulować, zastopować/reaaktywować
+    -> informacja powinna dotrzeć zarówno do użytkownika jak i do systemu,
+    w tym przypadku zastosowałbym eventy. Użytkownik wysyła żądanie, które ostatecznie dociera do API zew. dostawcy, które generuje odpowiedni event o zmianie stanu zamówienia. Nasz system na jego podstawie aktualizuje bazę danych ze stanem, a klient na frontendzie widzi nowy stan.
+
+Subskrypcje -> zamówienia wysyłane co miesiąc
+    -> stały peek zamówień do obsłużenia zawsze tego samego dnia (np. 1 dzień miesiąca) w połączeniu z możliwym scenariuszem szalonego użytkownika skłania raczej do zastosowania systemu kolejowego.
+
+
+Podsumowując:
+1. Frontend <-> Backend, kolejki, bądź też skalowalny serwis, któremu z łatwością dodamy kolejne instancje i wtedy możemy mieć REST API
+
+2. Backend <-> zew. dostawca API, tu już w grę wchodzą kolejki. Zew. dostawca API generuje eventy, na które subskrypcję mają Frontend i Backend
+
+Wąskim gardłem wydaje się być baza danych: 
+ - duża liczba zapisów i odczytów w tym samym czasie
+
